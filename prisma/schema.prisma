@@ -1,0 +1,34 @@
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+model Usuario {
+  id     Int    @id @default(autoincrement())
+  nome   String
+  email  String @unique
+  senha  String
+}
+
+model Produto {
+  id         Int      @id @default(autoincrement())
+  nome       String
+  descricao  String?
+  imagem       String
+  valor      Decimal  @db.Decimal(10, 2)
+  quantidade Int      @default(0)
+  operacoes   OperacaoEstoque[] // Relação com operações de estoque
+}
+
+model OperacaoEstoque {
+  id          Int       @id @default(autoincrement())
+  produtoId   Int
+  tipo        String    // 'entrada' ou 'saida'
+  quantidade  Int
+  data        DateTime  @default(now())
+  produto     Produto   @relation(fields: [produtoId], references: [id])
+}
